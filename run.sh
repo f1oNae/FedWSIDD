@@ -1,5 +1,5 @@
 #!/bin/bash
-#PBS -P iq24
+#PBS -P sz65
 #PBS -l ncpus=12
 #PBS -l ngpus=1
 #PBS -q gpuvolta
@@ -12,10 +12,10 @@ PROJECT_ID=iq24
 MODEL_NAME=ResNet50
 FEATURE_TYPE=R50_features
 MODEL_NAME_MIL=CLAM_SB
-MODEL_NAME_FED=fed_desa
+MODEL_NAME_FED=fed_wsidd
 OPTIMIZER=adamw
 OPTIMIZER_IMAGE=sgd
-EXP_CODE=FedWSIDD_10_100_real_init_heter
+EXP_CODE=fed_wsidd
 N_DD=10
 N_DD_PATCH=100
 LOCAL_EPOCHS=50
@@ -25,14 +25,13 @@ REPEAT=3
 LR=0.001
 DATA_NAME=CAMELYON16 #CAMELYON16_IMAGE CAMELYON17
 FT_ROOT=/g/data/$PROJECT_ID/CAMELYON16_patches
-CODE_ROOT=/scratch/iq24/cc0395/FedDDHist
+CODE_ROOT=/scratch/iq24/cc0395/FedWSIDD
 
 cd $CODE_ROOT
 source /g/data/$PROJECT_ID/mmcv_env/bin/activate
 echo "Current Working Directory: $(pwd)"
 
 python3 main.py \
---heter_model \
 --feature_type $FEATURE_TYPE \
 --ft_model $MODEL_NAME \
 --mil_method $MODEL_NAME_MIL \
@@ -70,7 +69,9 @@ python3 main.py \
 --share_blocks 0 1 2 3 4 \
 --share_blocks_g   5 6 \
 --image_size 224 \
---init_real \
+--debug
+#--init_real \
+#--heter_model \
 #--debug
 
 

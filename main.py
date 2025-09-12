@@ -11,7 +11,7 @@ from model.FedAvg.FedAvgServer import FedAvg
 from model.FedProx.FedProxServer import FedProx
 from model.FedDyn.FedDynServer import FedDyn
 from model.FedMOON.FedMOONServer import FedMOON
-from model.FedDM.FedDMServer import FedDM
+# from model.FedDM.FedDMServer import FedDM
 from model.FedGen.FedGenServer import FedGen
 from model.FedAF.FedAFServer import FedAF
 from model.FedNoVa.FedNovaServer import FedNoVa
@@ -19,11 +19,13 @@ from model.FedScaffold.FedScaffoldServer import FedScaffold
 from model.FedDESA.FedDESARunner import FedDESA
 from model.FedProto.FedProtoServer import FedProto
 from model.FedPrompt.FedPromptServer import FedPrompt
+from model.FedWSIDD.FedWSIDDRunner import FedWSIDD
 from model.FedHE.FedHEServer import FedHE
 from model.SGPT.SGPTServer import SGPT
 from model.FedImpro.FedImproServer import FedImpro
 from model.FedMut.FedMutServer import FedMut
 from model.FedSOL.FedSOLServer import FedSOL
+from model.FedDDG.FedDDGRunner import FedDDG
 import torch
 
 
@@ -97,7 +99,8 @@ parser.add_argument('--fed_method', type=str, default='fed_avg',choices=['fed_ba
                                                                          'fed_impro',
                                                                          'fed_mut',
                                                                          'fed_sol',
-                                                                         'fed_prompt'], help='fed method')
+                                                                         'fed_prompt',
+                                                                         'fed_ddg'], help='fed method')
 parser.add_argument('--fed_split', type=str, default='FeatureSynthesisLabel', help='fed split')
 parser.add_argument('--fed_split_std_mode', type=str, default='update', help='fed split std mode')
 parser.add_argument('--fed_split_noise_std', type=float, default=0.1, help='fed split noise std')
@@ -207,10 +210,12 @@ if __name__ == '__main__':
     if args.debug:
         args.repeat = 1
         args.global_epochs = 1
-        args.local_epochs = 2
-        args.dc_iterations = 10
+        args.local_epochs = 1
+        args.dc_iterations = 1
         args.global_epochs_dm = 1
         args.kd_iters = 1
+        args.ipc = 10
+        args.nps = 100
     overall_avg_acc, overall_acc_per_agent = [], {}
     logger.info(f'Performing experiments: {args.exp_code} {args.fed_method} {args.mil_method} {args.ft_model}')
     for rep in range(args.repeat):
@@ -234,8 +239,8 @@ if __name__ == '__main__':
             runner = FedGen(args, logger=logger)
         elif args.fed_method == 'fed_nova':
             runner = FedNoVa(args, logger=logger)
-        elif args.fed_method == 'fed_dm':
-            runner = FedDM(args, logger=logger)
+        # elif args.fed_method == 'fed_dm':
+        #     runner = FedDM(args, logger=logger)
         elif args.fed_method == 'fed_af':
             runner = FedAF(args, logger=logger)
         elif args.fed_method == 'scaffold':
@@ -246,6 +251,8 @@ if __name__ == '__main__':
             runner = FedProto(args, logger=logger)
         elif args.fed_method == 'fed_he':
             runner = FedHE(args, logger=logger)
+        elif args.fed_method == 'fed_wsidd':
+            runner = FedWSIDD(args, logger=logger)
         elif args.fed_method == 'sgpt':
             runner = SGPT(args, logger=logger)
         elif args.fed_method == 'fed_impro':
@@ -256,6 +263,8 @@ if __name__ == '__main__':
             runner = FedSOL(args, logger=logger)
         elif args.fed_method == 'fed_prompt':
             runner = FedPrompt(args, logger=logger)
+        elif args.fed_method == 'fed_ddg':
+            runner = FedDDG(args, logger=logger)
         else:
             raise NotImplementedError
         best_accuracy, train_acc_wt, best_accuracy_per_agent = runner.run(rep)
