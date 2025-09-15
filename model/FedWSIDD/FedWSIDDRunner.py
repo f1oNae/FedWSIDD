@@ -64,7 +64,7 @@ def calculate_kd_loss(y_pred_student, y_pred_teacher, y_true, loss_fn, temp=20.,
     return loss
 
 
-class FedDESA:
+class FedWSIDD:
     def __init__(self, args, logger):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.args = args
