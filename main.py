@@ -25,7 +25,6 @@ from model.SGPT.SGPTServer import SGPT
 from model.FedImpro.FedImproServer import FedImpro
 from model.FedMut.FedMutServer import FedMut
 from model.FedSOL.FedSOLServer import FedSOL
-from model.FedDDG.FedDDGRunner import FedDDG
 import torch
 
 
@@ -263,8 +262,6 @@ if __name__ == '__main__':
             runner = FedSOL(args, logger=logger)
         elif args.fed_method == 'fed_prompt':
             runner = FedPrompt(args, logger=logger)
-        elif args.fed_method == 'fed_ddg':
-            runner = FedDDG(args, logger=logger)
         else:
             raise NotImplementedError
         best_accuracy, train_acc_wt, best_accuracy_per_agent = runner.run(rep)
